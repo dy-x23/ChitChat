@@ -1,0 +1,71 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Room {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  hostId      String
+  totalRounds Int      @default(5)
+  mode        String   @default("STANDARD_MIXED")
+  createdAt   DateTime @default(now())
+  rounds      Round[]
+}
+
+model Round {
+  id          String     @id @default(uuid())
+  roomId      String
+  roundNumber Int
+  prompt      String
+  mode        String
+  chits       Chit[]
+  guesses     Guess[]
+  reactions   Reaction[]
+  createdAt   DateTime   @default(now())
+
+  room        Room       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+model Chit {
+  id           String   @id @default(uuid())
+  roundId      String
+  authorId     String
+  authorName   String
+  assignedToId String?
+  content      String
+  isLie        Int?
+  createdAt    DateTime @default(now())
+
+  round        Round    @relation(fields: [roundId], references: [id], onDelete: Cascade)
+}
+
+model Guess {
+  id              String   @id @default(uuid())
+  roundId         String
+  guesserId       String
+  targetChitId    String
+  guessedAuthorId String
+  confidence      String   @default("sure")
+  reactionText    String?
+  isCorrect       Boolean  @default(false)
+  pointsAwarded   Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  round           Round    @relation(fields: [roundId], references: [id], onDelete: Cascade)
+}
+
+model Reaction {
+  id           String   @id @default(uuid())
+  roundId      String
+  chitId       String
+  playerId     String
+  reactionType String
+  createdAt    DateTime @default(now())
+
+  round        Round    @relation(fields: [roundId], references: [id], onDelete: Cascade)
+}
