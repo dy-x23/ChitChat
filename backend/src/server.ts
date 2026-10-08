@@ -34,6 +34,6 @@ const io = new Server(httpServer, {
 const gameManager = new GameManager(io);
 setupSocketHandlers(io, gameManager);
 
-httpServer.listen(PORT, () => {
-  console.log(`🚀 Chit Game Realtime Server is listening on port ${PORT}`);
+httpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Chit Game Realtime Server is listening on 0.0.0.0:${PORT}`);
 });
